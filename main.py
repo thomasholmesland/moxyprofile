@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 #calculate sloperate from a list
 seconds = 180
@@ -39,51 +40,69 @@ for i in range(len(slope_minute)):
 
 print(f"Sloperate for one minute into the interval: {slope_calculated_minute}")
 
+#Converting slopevalue to lactate estimation using Linear regression.
+X_reshaped = np.array(slope_calculated_minute).reshape(-1, 1)
+model = LinearRegression()
+
+model.fit(X_reshaped, lactate)
+print("What Slopevalue do you want to convert to lactate?")
+new_X = float(input())
+predicted_Y = model.predict(np.array([[new_X]]))
+
+print(f"Predicted Lactate for Slopevalue = {new_X}: {predicted_Y[0]}")
+
 correlation_coefficient_beginning = np.corrcoef(lactate, slope_calculated_beginning)[0, 1]
 correlation_coefficient_minute = np.corrcoef(lactate, slope_calculated_minute)[0, 1]
 correlation_coefficient_heartrate = np.corrcoef(lactate, average_heartrate)[0, 1]
 correlation_coefficient_power = np.corrcoef(lactate, average_power)[0, 1]
 
-fig, ax = plt.subplots()
-plt.rcParams["figure.figsize"] = (10, 10)
-plt.subplot(3, 2, 1)
-plt.scatter(average_power, lactate, c="red", label="Lactate")
-plt.scatter(average_power, slope_calculated_minute, c="blue", label="Slope from one minute in")
-plt.axis([200, 450, -2, 10])
-plt.xlabel("Power")
-plt.ylabel("Sloperate")
-plt.text(0.95, 0.95, f"r From one minute in = {correlation_coefficient_minute:.4f}",
-         transform=plt.gca().transAxes,
-         verticalalignment='top', horizontalalignment='right')
-plt.legend(loc="upper left")
 
-plt.subplot(3, 2, 2)
-plt.scatter(average_power, lactate, c="red", label="Lactate")
-plt.scatter(average_power, slope_calculated_beginning, c="blue", label="Slope from beginning")
-plt.axis([200, 450, -2, 10])
-plt.xlabel("Power")
-plt.ylabel("Sloperate")
-plt.text(0.95, 0.95, f"r From the beginning = {correlation_coefficient_beginning:.4f}",
-         transform=plt.gca().transAxes,
-         verticalalignment='top', horizontalalignment='right')
-plt.legend(loc="upper left")
+#Showing plots if yes. Else stop.
 
-plt.subplot(3, 2, 3)
-plt.scatter(average_power, average_heartrate, c="red")
-plt.text(0.95, 0.95, f"r = {correlation_coefficient_heartrate:.4f}",
-         transform=plt.gca().transAxes,
-         verticalalignment='top', horizontalalignment='right')
-plt.axis([200, 450, 120, 180])
-plt.xlabel("Power")
-plt.ylabel("Average heartrate")
+print("Do you want to see plots for the values?")
+print("Yes or No")
+show_plots = input()
 
-plt.subplot(3, 2, 4)
-plt.scatter(average_power, lactate, c="red")
-plt.text(0.95, 0.95, f"r = {correlation_coefficient_power:.4f}",
-         transform=plt.gca().transAxes,
-         verticalalignment='top', horizontalalignment='right')
-plt.axis([200, 450, 0, 10])
-plt.xlabel("Average power")
-plt.ylabel("Lactate")
-plt.show()
+if show_plots == "Yes":
+    fig, ax = plt.subplots()
+    plt.rcParams["figure.figsize"] = (10, 10)
+    plt.subplot(3, 2, 1)
+    plt.scatter(average_power, lactate, c="red", label="Lactate")
+    plt.scatter(average_power, slope_calculated_minute, c="blue", label="Slope from one minute in")
+    plt.axis([200, 450, -2, 10])
+    plt.xlabel("Power")
+    plt.ylabel("Sloperate")
+    plt.text(0.95, 0.95, f"r From one minute in = {correlation_coefficient_minute:.4f}",
+             transform=plt.gca().transAxes,
+             verticalalignment='top', horizontalalignment='right')
+    plt.legend(loc="upper left")
 
+    plt.subplot(3, 2, 2)
+    plt.scatter(average_power, lactate, c="red", label="Lactate")
+    plt.scatter(average_power, slope_calculated_beginning, c="blue", label="Slope from beginning")
+    plt.axis([200, 450, -2, 10])
+    plt.xlabel("Power")
+    plt.ylabel("Sloperate")
+    plt.text(0.95, 0.95, f"r From the beginning = {correlation_coefficient_beginning:.4f}",
+             transform=plt.gca().transAxes,
+             verticalalignment='top', horizontalalignment='right')
+    plt.legend(loc="upper left")
+
+    plt.subplot(3, 2, 3)
+    plt.scatter(average_power, average_heartrate, c="red")
+    plt.text(0.95, 0.95, f"r = {correlation_coefficient_heartrate:.4f}",
+             transform=plt.gca().transAxes,
+             verticalalignment='top', horizontalalignment='right')
+    plt.axis([200, 450, 120, 180])
+    plt.xlabel("Power")
+    plt.ylabel("Average heartrate")
+
+    plt.subplot(3, 2, 4)
+    plt.scatter(average_power, lactate, c="red")
+    plt.text(0.95, 0.95, f"r = {correlation_coefficient_power:.4f}",
+             transform=plt.gca().transAxes,
+             verticalalignment='top', horizontalalignment='right')
+    plt.axis([200, 450, 0, 10])
+    plt.xlabel("Average power")
+    plt.ylabel("Lactate")
+    plt.show()
